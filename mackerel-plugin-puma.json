@@ -1,4 +1,4 @@
 {
-    "source": "rmanzoku/mackerel-plugin-puma",
-    "description": "Puma custom metrics plugin"
+    "source": "srockstyle/mackerel-plugin-puma-v2",
+    "description": "Puma custom metrics plugin V2"
 }

@@ -7,4 +7,4 @@
 set -e
 latest_tag=$(git describe --abbrev=0 --tags)
 goxc
-ghr -u rmanzoku -r mackerel-plugin-puma $latest_tag dist/snapshot/
+ghr -u srockstyle -r mackerel-plugin-puma-v2 $latest_tag dist/snapshot/
