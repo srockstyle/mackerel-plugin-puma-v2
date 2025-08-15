@@ -2,6 +2,7 @@ package domain
 
 import (
 	"fmt"
+	"slices"
 	"time"
 )
 
@@ -62,11 +63,24 @@ func (mc *MetricCollection) All() []Metric {
 
 // Filter returns metrics matching the given predicate
 func (mc *MetricCollection) Filter(predicate func(Metric) bool) []Metric {
-	filtered := make([]Metric, 0)
-	for _, m := range mc.metrics {
-		if predicate(m) {
-			filtered = append(filtered, m)
+	return slices.DeleteFunc(slices.Clone(mc.metrics), func(m Metric) bool {
+		return !predicate(m)
+	})
+}
+
+// Iter returns an iterator over the metrics
+func (mc *MetricCollection) Iter() func(func(int, Metric) bool) {
+	return func(yield func(int, Metric) bool) {
+		for i, m := range mc.metrics {
+			if !yield(i, m) {
+				return
+			}
 		}
 	}
-	return filtered
+}
+
+// Clear removes all metrics from the collection
+func (mc *MetricCollection) Clear() {
+	clear(mc.metrics)
+	mc.metrics = mc.metrics[:0]
 }

@@ -12,12 +12,13 @@ A modern Mackerel plugin for monitoring Puma web server, built from scratch for 
 - **Flexible Configuration**: Single mode and cluster mode support
 - **Extended Metrics**: Request count, uptime, thread utilization (Puma 6.x)
 - **Backward Compatible**: Works with Puma 4.x and 5.x
+- **Modern Go Features**: Built with Go 1.24, utilizing range over integers, slices package, and iterators
 
 ## Requirements
 
 - Puma 4.0 or later (optimized for 6.6.1+)
 - Puma control server enabled
-- Go 1.20 or later (for building from source)
+- Go 1.24 or later (for building from source)
 
 ## Installation
 

@@ -37,7 +37,7 @@ func NewMetricsCollector(config *Config, logger *log.Logger) *MetricsCollector {
 func (c *MetricsCollector) Collect(ctx context.Context) (*domain.MetricCollection, error) {
 	var lastErr error
 
-	for i := 0; i <= c.retryCount; i++ {
+	for i := range c.retryCount + 1 {
 		if i > 0 {
 			c.logger.Printf("Retry attempt %d/%d after %v", i, c.retryCount, c.retryInterval)
 			select {

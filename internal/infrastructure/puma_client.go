@@ -68,7 +68,7 @@ func NewPumaClient(socketPath string, timeout time.Duration) PumaClient {
 func (c *DefaultPumaClient) GetStats(ctx context.Context) (*PumaStats, error) {
 	var lastErr error
 
-	for i := 0; i <= c.retryCount; i++ {
+	for i := range c.retryCount + 1 {
 		if i > 0 {
 			select {
 			case <-ctx.Done():

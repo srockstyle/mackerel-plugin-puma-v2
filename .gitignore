@@ -6,3 +6,4 @@ mackerel-plugin-puma
 dist
 *.test
 .glide/
+bin/mackerel-plugin-puma-v2
