@@ -91,6 +91,41 @@ func (p *MackerelPlugin) GraphDefinition() map[string]mp.Graphs {
 				{Name: "ruby.gc.heap_length", Label: "Heap Length"},
 			},
 		},
+		"ruby_gc_detailed": {
+			Label: "Ruby GC Details",
+			Unit:  mp.UnitInteger,
+			Metrics: []mp.Metrics{
+				{Name: "ruby.gc.minor_count", Label: "Minor GC", Diff: true},
+				{Name: "ruby.gc.major_count", Label: "Major GC", Diff: true},
+			},
+		},
+		"ruby_heap_slots": {
+			Label: "Ruby Heap Slots",
+			Unit:  mp.UnitInteger,
+			Metrics: []mp.Metrics{
+				{Name: "ruby.gc.heap_available_slots", Label: "Available Slots"},
+				{Name: "ruby.gc.heap_live_slots", Label: "Live Slots", Stacked: true},
+				{Name: "ruby.gc.heap_free_slots", Label: "Free Slots", Stacked: true},
+				{Name: "ruby.gc.heap_final_slots", Label: "Final Slots"},
+				{Name: "ruby.gc.heap_marked_slots", Label: "Marked Slots"},
+			},
+		},
+		"ruby_old_objects": {
+			Label: "Ruby Old Objects",
+			Unit:  mp.UnitInteger,
+			Metrics: []mp.Metrics{
+				{Name: "ruby.gc.old_objects", Label: "Old Objects"},
+				{Name: "ruby.gc.old_objects_limit", Label: "Old Objects Limit"},
+			},
+		},
+		"ruby_old_malloc": {
+			Label: "Ruby Old Malloc",
+			Unit:  mp.UnitBytes,
+			Metrics: []mp.Metrics{
+				{Name: "ruby.gc.oldmalloc_bytes", Label: "Old Malloc Bytes"},
+				{Name: "ruby.gc.oldmalloc_limit", Label: "Old Malloc Limit"},
+			},
+		},
 		"thread_utilization": {
 			Label: "Thread Utilization",
 			Unit:  mp.UnitPercentage,

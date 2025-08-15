@@ -121,6 +121,82 @@ var MetricDefinitions = map[string]MetricDefinition{
 		Type:  MetricTypeGauge,
 		Unit:  "percentage",
 	},
+
+	// Go runtime metrics
+	"go.goroutines": {
+		Name:  "go.goroutines",
+		Label: "Goroutines",
+		Type:  MetricTypeGauge,
+		Unit:  "integer",
+	},
+
+	// Detailed Ruby GC metrics (from lib/gc.go)
+	"ruby.gc.minor_count": {
+		Name:  "ruby.gc.minor_count",
+		Label: "Ruby Minor GC Count",
+		Type:  MetricTypeCounter,
+		Unit:  "integer",
+	},
+	"ruby.gc.major_count": {
+		Name:  "ruby.gc.major_count",
+		Label: "Ruby Major GC Count",
+		Type:  MetricTypeCounter,
+		Unit:  "integer",
+	},
+	"ruby.gc.heap_available_slots": {
+		Name:  "ruby.gc.heap_available_slots",
+		Label: "Ruby Heap Available Slots",
+		Type:  MetricTypeGauge,
+		Unit:  "slots",
+	},
+	"ruby.gc.heap_live_slots": {
+		Name:  "ruby.gc.heap_live_slots",
+		Label: "Ruby Heap Live Slots",
+		Type:  MetricTypeGauge,
+		Unit:  "slots",
+	},
+	"ruby.gc.heap_free_slots": {
+		Name:  "ruby.gc.heap_free_slots",
+		Label: "Ruby Heap Free Slots",
+		Type:  MetricTypeGauge,
+		Unit:  "slots",
+	},
+	"ruby.gc.heap_final_slots": {
+		Name:  "ruby.gc.heap_final_slots",
+		Label: "Ruby Heap Final Slots",
+		Type:  MetricTypeGauge,
+		Unit:  "slots",
+	},
+	"ruby.gc.heap_marked_slots": {
+		Name:  "ruby.gc.heap_marked_slots",
+		Label: "Ruby Heap Marked Slots",
+		Type:  MetricTypeGauge,
+		Unit:  "slots",
+	},
+	"ruby.gc.old_objects": {
+		Name:  "ruby.gc.old_objects",
+		Label: "Ruby Old Objects",
+		Type:  MetricTypeGauge,
+		Unit:  "integer",
+	},
+	"ruby.gc.old_objects_limit": {
+		Name:  "ruby.gc.old_objects_limit",
+		Label: "Ruby Old Objects Limit",
+		Type:  MetricTypeGauge,
+		Unit:  "integer",
+	},
+	"ruby.gc.oldmalloc_bytes": {
+		Name:  "ruby.gc.oldmalloc_bytes",
+		Label: "Ruby Old Malloc Bytes",
+		Type:  MetricTypeGauge,
+		Unit:  "bytes",
+	},
+	"ruby.gc.oldmalloc_limit": {
+		Name:  "ruby.gc.oldmalloc_limit",
+		Label: "Ruby Old Malloc Limit",
+		Type:  MetricTypeGauge,
+		Unit:  "bytes",
+	},
 }
 
 // MetricDefinition defines a metric's properties

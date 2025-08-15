@@ -11,30 +11,31 @@ The original mackerel-plugin-puma hasn't been updated since 2017 and has the fol
 - No support for Puma 6.x features
 - Limited error handling
 - Outdated dependencies
+- Buffer overflow issues with Unix socket communication
 - No active maintenance
 
 mackerel-plugin-puma-v2 is a complete rewrite that addresses these issues with:
 
-- Full Puma 6.x compatibility
-- Modern Go architecture
-- Comprehensive error handling
+- Full Puma 6.x compatibility with automatic version detection
+- Clean Architecture design
+- Comprehensive error handling with retry logic
+- Modern Go 1.24 features
+- Extended metrics collection
 - Active maintenance
 
-## Repository Setup
+## Major Changes
 
-To use mackerel-plugin-puma-v2, you should:
+### Primary Connection Method
+- **Old**: HTTP/HTTPS connection
+- **New**: Unix domain socket (recommended for security and performance)
 
-1. **Fork or Clone this repository**
-2. **Rename the directory** (optional but recommended):
-   ```bash
-   mv mackerel-plugin-puma mackerel-plugin-puma-v2
-   cd mackerel-plugin-puma-v2
-   ```
+### Architecture
+- **Old**: Single file implementation
+- **New**: Clean Architecture with modular design
 
-3. **Update the remote** (if forked):
-   ```bash
-   git remote set-url origin https://github.com/srockstyle/mackerel-plugin-puma-v2.git
-   ```
+### Go Version
+- **Old**: Go 1.11+
+- **New**: Go 1.24+ (uses modern language features)
 
 ## Installation Changes
 
@@ -57,83 +58,158 @@ go install github.com/srockstyle/mackerel-plugin-puma-v2@latest
 - New: `mackerel-plugin-puma-v2`
 
 ### Command Line Options
-The basic options remain the same, but v2 adds new options:
 
-#### New Options in v2
-- `-timeout duration` - Request timeout (default 10s)
-- `-retry int` - Number of retry attempts (default 3)
-- `-scheme string` - URL scheme support (http/https)
+#### Removed Options
+- `-host string` - No longer supported
+- `-port string` - No longer supported
+- `-token string` - Authentication not required for Unix socket
+- `-scheme string` - Unix socket doesn't use URL scheme
+- `-with-gc` - Now included in `-extended` flag
 
-### Configuration Example
+#### New/Changed Options
+- `-socket string` - Path to Puma control socket (default "/tmp/puma.sock")
+- `-extended` - Collect extended metrics including GC stats
+- Environment variable support: `PUMA_SOCKET`
 
-#### Old Configuration
+### Configuration Examples
+
+#### Old Configuration (HTTP)
 ```toml
 [plugin.metrics.puma]
-command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma -token=secret"
+command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma -host=localhost -port=9293 -token=secret"
 ```
 
-#### New Configuration
+#### New Configuration (Unix Socket)
 ```toml
 [plugin.metrics.puma]
-command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -token=secret -timeout=30s -retry=5"
+command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -socket=/tmp/puma.sock"
+```
+
+#### With Extended Metrics
+```toml
+[plugin.metrics.puma]
+command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -socket=/tmp/puma.sock -extended"
+```
+
+## Puma Configuration Changes
+
+### Enable Unix Socket Control
+Update your `config/puma.rb`:
+
+```ruby
+# Old (HTTP)
+activate_control_app 'tcp://127.0.0.1:9293', { auth_token: 'secret' }
+
+# New (Unix Socket) - Recommended
+activate_control_app 'unix:///tmp/puma.sock'
 ```
 
 ## New Metrics in v2
 
-v2 adds several new metrics for Puma 6.x:
+### Core Metrics (All Versions)
+- Same as v1 (workers, threads, backlog, etc.)
 
-### Request Metrics
+### Puma 6.x Specific
 - `puma.requests_count` - Total requests processed
 - `puma.uptime` - Server uptime in seconds
+- `puma.thread_utilization` - Thread utilization percentage
 
-### Thread Utilization
-- `puma.worker_thread_utilization.worker{N}.utilization` - Thread utilization percentage per worker
+### Extended Metrics (-extended flag)
 
-### Future Metrics (Planned)
-- Memory usage per worker
-- Request queue time
-- Error rates
+#### Memory Metrics
+- `puma.memory.alloc` - Allocated memory (MB)
+- `puma.memory.sys` - System memory (MB)
+- `puma.memory.heap_inuse` - Heap memory in use (MB)
 
-## Breaking Changes
+#### Detailed Ruby GC Metrics
+- `puma.ruby.gc.minor_count` - Minor GC count
+- `puma.ruby.gc.major_count` - Major GC count
+- `puma.ruby.gc.heap_available_slots` - Available heap slots
+- `puma.ruby.gc.heap_live_slots` - Live heap slots
+- `puma.ruby.gc.heap_free_slots` - Free heap slots
+- `puma.ruby.gc.old_objects` - Old generation objects
+- `puma.ruby.gc.oldmalloc_bytes` - Old malloc bytes
 
-### Metric Name Changes
-None - v2 maintains backward compatibility with existing metric names.
-
-### Removed Features
-- GC stats collection (`-with-gc`) may not work with Puma 6.x as the endpoint might be removed
+#### Go Runtime Metrics
+- `puma.go.goroutines` - Number of goroutines
 
 ## Migration Steps
 
-1. **Test in Development**
-   ```bash
-   # Test with your current Puma setup
-   mackerel-plugin-puma-v2 -host=localhost -port=9293 -token=your-token
+1. **Update Puma Configuration**
+   ```ruby
+   # Add to config/puma.rb
+   activate_control_app 'unix:///tmp/puma.sock'
    ```
 
-2. **Compare Metrics**
-   - Run both plugins in parallel temporarily
-   - Verify metrics are collected correctly
-
-3. **Update Configuration**
-   - Replace the old plugin command with v2
-   - Add new options as needed
-
-4. **Remove Old Plugin**
+2. **Test Connection**
    ```bash
-   # After successful migration
+   # Test with Unix socket
+   mackerel-plugin-puma-v2 -socket=/tmp/puma.sock
+   ```
+
+3. **Update Mackerel Agent Configuration**
+   ```toml
+   [plugin.metrics.puma]
+   command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -socket=/tmp/puma.sock"
+   ```
+
+4. **Enable Extended Metrics (Optional)**
+   ```toml
+   [plugin.metrics.puma]
+   command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -socket=/tmp/puma.sock -extended"
+   ```
+
+5. **Remove Old Plugin**
+   ```bash
    rm /opt/mackerel-agent/plugins/bin/mackerel-plugin-puma
    ```
+
+## Breaking Changes
+
+### Connection Method
+- HTTP/HTTPS connection support removed in favor of Unix socket
+- Authentication token not supported (Unix socket provides file system security)
+
+### Metric Names
+- All metric names remain backward compatible
+
+### GC Stats
+- `-with-gc` flag replaced by `-extended` flag
+- GC stats now include more detailed Ruby GC metrics
+
+## Troubleshooting
+
+### Permission Denied
+Ensure mackerel-agent user has read permission for the socket:
+```bash
+ls -l /tmp/puma.sock
+# srw-rw-rw- 1 puma puma 0 Aug 16 10:00 /tmp/puma.sock
+```
+
+### Socket Not Found
+Verify Puma is running and control server is enabled:
+```bash
+ps aux | grep puma
+# Check if socket file exists
+ls -la /tmp/puma.sock
+```
+
+### No Metrics Collected
+Enable debug mode:
+```bash
+MACKEREL_PLUGIN_DEBUG=1 mackerel-plugin-puma-v2 -socket=/tmp/puma.sock
+```
 
 ## Rollback Plan
 
 If you need to rollback:
 
-1. Keep the old binary until migration is verified
-2. Simply change the configuration back to use the old binary
-3. Report any issues to: https://github.com/srockstyle/mackerel-plugin-puma-v2/issues
+1. Re-enable HTTP control in Puma configuration
+2. Reinstall old plugin
+3. Update mackerel-agent configuration to use old plugin
 
 ## Support
 
-For questions or issues with v2:
+For questions or issues:
 - GitHub Issues: https://github.com/srockstyle/mackerel-plugin-puma-v2/issues
 - Documentation: https://github.com/srockstyle/mackerel-plugin-puma-v2/blob/main/README.md

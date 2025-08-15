@@ -2,10 +2,12 @@ package application
 
 import (
 	"context"
+	"encoding/json"
 	"runtime"
 	"time"
 
 	"github.com/srockstyle/mackerel-plugin-puma-v2/internal/domain"
+	"github.com/srockstyle/mackerel-plugin-puma-v2/internal/infrastructure/parsers"
 )
 
 // ExtendedMetricsCollector collects extended metrics including system stats
@@ -120,37 +122,26 @@ func (c *ExtendedMetricsCollector) tryAddGCMetrics(ctx context.Context, collecti
 		return
 	}
 
+	// Convert to JSON bytes for the parser
+	gcData, err := json.Marshal(gcStats)
+	if err != nil {
+		c.baseCollector.logger.Printf("Failed to marshal GC stats: %v", err)
+		return
+	}
+
+	// Use the detailed GC parser
+	gcParser := &parsers.GCParser{}
+	gcMetrics, err := gcParser.ParseGCStats(gcData)
+	if err != nil {
+		c.baseCollector.logger.Printf("Failed to parse GC stats: %v", err)
+		return
+	}
+
+	// Add all parsed GC metrics to the collection
 	timestamp := time.Now()
-
-	// Parse GC stats
-	if count, ok := getFloat64FromInterface(gcStats["count"]); ok {
-		collection.Add(domain.Metric{
-			Name:      "ruby.gc.count",
-			Value:     count,
-			Type:      domain.MetricTypeCounter,
-			Unit:      "count",
-			Timestamp: timestamp,
-		})
-	}
-
-	if heapUsed, ok := getFloat64FromInterface(gcStats["heap_used"]); ok {
-		collection.Add(domain.Metric{
-			Name:      "ruby.gc.heap_used",
-			Value:     heapUsed,
-			Type:      domain.MetricTypeGauge,
-			Unit:      "slots",
-			Timestamp: timestamp,
-		})
-	}
-
-	if heapLength, ok := getFloat64FromInterface(gcStats["heap_length"]); ok {
-		collection.Add(domain.Metric{
-			Name:      "ruby.gc.heap_length",
-			Value:     heapLength,
-			Type:      domain.MetricTypeGauge,
-			Unit:      "slots",
-			Timestamp: timestamp,
-		})
+	for _, metric := range gcMetrics.All() {
+		metric.Timestamp = timestamp
+		collection.Add(metric)
 	}
 }
 
