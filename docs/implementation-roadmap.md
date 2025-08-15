@@ -1,14 +1,14 @@
-# 実装ロードマップ
+# mackerel-plugin-puma-v2 実装ロードマップ
 
 ## 概要
 
-このドキュメントは、mackerel-plugin-puma の Puma 6.6.1 対応における詳細な実装ロードマップです。各フェーズごとの具体的なタスク、実装例、チェックリストを提供します。
+このドキュメントは、mackerel-plugin-puma-v2 の新規実装における詳細なロードマップです。ゼロから構築する新しいプラグインとして、最新の Puma 6.6.1 に完全対応した設計で実装します。
 
 ## タイムライン
 
 ```mermaid
 gantt
-    title Puma 6.6.1 対応実装スケジュール
+    title mackerel-plugin-puma-v2 実装スケジュール
     dateFormat  YYYY-MM-DD
     section Phase 1
     基盤整備           :p1, 2024-01-01, 7d
@@ -31,13 +31,13 @@ gantt
 
 ```bash
 # go.mod の作成
-go mod init github.com/rmanzoku/mackerel-plugin-puma
+go mod init github.com/srockstyle/mackerel-plugin-puma-v2
 go mod tidy
 ```
 
 **go.mod 例:**
 ```go
-module github.com/rmanzoku/mackerel-plugin-puma
+module github.com/srockstyle/mackerel-plugin-puma-v2
 
 go 1.21
 
@@ -50,9 +50,9 @@ require (
 #### 1.2 プロジェクト構造の再編成
 
 ```
-mackerel-plugin-puma/
+mackerel-plugin-puma-v2/
 ├── cmd/
-│   └── mackerel-plugin-puma/
+│   └── mackerel-plugin-puma-v2/
 │       └── main.go
 ├── internal/
 │   ├── domain/
@@ -215,7 +215,7 @@ import (
     "log"
     "time"
 
-    "github.com/rmanzoku/mackerel-plugin-puma/internal/domain"
+    "github.com/srockstyle/mackerel-plugin-puma-v2/internal/domain"
 )
 
 type MetricsCollector struct {
@@ -617,8 +617,8 @@ package parsers
 import (
     "time"
 
-    "github.com/rmanzoku/mackerel-plugin-puma/internal/domain"
-    "github.com/rmanzoku/mackerel-plugin-puma/internal/infrastructure"
+    "github.com/srockstyle/mackerel-plugin-puma-v2/internal/domain"
+    "github.com/srockstyle/mackerel-plugin-puma-v2/internal/infrastructure"
 )
 
 type V6Parser struct{}
@@ -792,7 +792,7 @@ import (
     "runtime"
     "syscall"
 
-    "github.com/rmanzoku/mackerel-plugin-puma/internal/domain"
+    "github.com/srockstyle/mackerel-plugin-puma-v2/internal/domain"
 )
 
 type ExtendedMetricsCollector struct {
@@ -879,8 +879,8 @@ import (
     "github.com/stretchr/testify/assert"
     "github.com/stretchr/testify/require"
 
-    "github.com/rmanzoku/mackerel-plugin-puma/internal/application"
-    "github.com/rmanzoku/mackerel-plugin-puma/internal/infrastructure"
+    "github.com/srockstyle/mackerel-plugin-puma-v2/internal/application"
+    "github.com/srockstyle/mackerel-plugin-puma-v2/internal/infrastructure"
 )
 
 func TestPumaV6Integration(t *testing.T) {
@@ -976,8 +976,8 @@ import (
     "context"
     "testing"
 
-    "github.com/rmanzoku/mackerel-plugin-puma/internal/application"
-    "github.com/rmanzoku/mackerel-plugin-puma/internal/infrastructure"
+    "github.com/srockstyle/mackerel-plugin-puma-v2/internal/application"
+    "github.com/srockstyle/mackerel-plugin-puma-v2/internal/infrastructure"
 )
 
 func BenchmarkMetricsCollection(b *testing.B) {

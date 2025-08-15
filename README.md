@@ -1,8 +1,8 @@
-# mackerel-plugin-puma
-[![Go Report Card](https://goreportcard.com/badge/github.com/rmanzoku/mackerel-plugin-puma)](https://goreportcard.com/report/github.com/rmanzoku/mackerel-plugin-puma)
+# mackerel-plugin-puma-v2
+[![Go Report Card](https://goreportcard.com/badge/github.com/srockstyle/mackerel-plugin-puma-v2)](https://goreportcard.com/report/github.com/srockstyle/mackerel-plugin-puma-v2)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Mackerel plugin for monitoring Puma web server. This plugin collects various metrics from Puma's control server API.
+A modern Mackerel plugin for monitoring Puma web server, built from scratch for Puma 6.x compatibility. This is a complete rewrite of the original mackerel-plugin-puma with enhanced features and better performance.
 
 ## Features
 
@@ -32,17 +32,17 @@ $ mkr plugin install mackerel-plugin-puma-v2
 ### From Source
 
 ```console
-$ go install github.com/rmanzoku/mackerel-plugin-puma@latest
+$ go install github.com/srockstyle/mackerel-plugin-puma-v2@latest
 ```
 
 ### Manual Download
 
-Download the latest release from the [releases page](https://github.com/rmanzoku/mackerel-plugin-puma/releases).
+Download the latest release from the [releases page](https://github.com/srockstyle/mackerel-plugin-puma-v2/releases).
 
 ## Usage
 
 ```
-Usage of mackerel-plugin-puma:
+Usage of mackerel-plugin-puma-v2:
   -host string
         The bind host for the control server (default "127.0.0.1")
   -port string
@@ -73,42 +73,42 @@ Usage of mackerel-plugin-puma:
 
 ```toml
 [plugin.metrics.puma]
-command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma"
+command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2"
 ```
 
 ### With Authentication Token
 
 ```toml
 [plugin.metrics.puma]
-command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma -token=your-secret-token"
+command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -token=your-secret-token"
 ```
 
 ### Unix Domain Socket
 
 ```toml
 [plugin.metrics.puma]
-command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma -sock=/path/to/pumactl.sock -token=your-secret-token"
+command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -sock=/path/to/pumactl.sock -token=your-secret-token"
 ```
 
 ### Single Mode (Non-clustered Puma)
 
 ```toml
 [plugin.metrics.puma]
-command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma -single -token=your-secret-token"
+command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -single -token=your-secret-token"
 ```
 
 ### HTTPS Connection
 
 ```toml
 [plugin.metrics.puma]
-command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma -scheme=https -host=puma.example.com -port=9293"
+command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -scheme=https -host=puma.example.com -port=9293"
 ```
 
 ### Advanced Configuration
 
 ```toml
 [plugin.metrics.puma]
-command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma -token=secret -timeout=30s -retry=5 -metric-key-prefix=myapp_puma"
+command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -token=secret -timeout=30s -retry=5 -metric-key-prefix=myapp_puma"
 ```
 
 ## Metrics
@@ -191,7 +191,7 @@ Check your token configuration matches between Puma and the plugin.
 
 1. Verify Puma is running: `ps aux | grep puma`
 2. Check control server is accessible
-3. Enable debug logging: `MACKEREL_PLUGIN_DEBUG=1 mackerel-plugin-puma ...`
+3. Enable debug logging: `MACKEREL_PLUGIN_DEBUG=1 mackerel-plugin-puma-v2 ...`
 
 ### Unix Socket Permission
 
@@ -236,8 +236,18 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 [srockstyle](https://github.com/srockstyle)
 
+## Why v2?
+
+The original mackerel-plugin-puma hasn't been updated since 2017 and lacks support for modern Puma versions. This v2 implementation:
+
+- Complete rewrite with clean architecture
+- Full Puma 6.x support with new metrics
+- Better error handling and retry logic
+- Comprehensive test coverage
+- Active maintenance and updates
+
 ## Acknowledgments
 
-- Original implementation by [rmanzoku](https://github.com/rmanzoku)
+- Original mackerel-plugin-puma by [rmanzoku](https://github.com/rmanzoku)
 - Mackerel team for the plugin framework
 - Puma team for the excellent web server

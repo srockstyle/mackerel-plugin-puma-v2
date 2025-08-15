@@ -1,6 +1,6 @@
 package main
 
-import "github.com/rmanzoku/mackerel-plugin-puma/lib"
+import "github.com/srockstyle/mackerel-plugin-puma-v2/lib"
 
 func main() {
 	mppuma.Do()
