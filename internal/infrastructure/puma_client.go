@@ -15,29 +15,29 @@ type PumaClient interface {
 
 // PumaStats represents Puma statistics
 type PumaStats struct {
-	Workers       int                    `json:"workers"`
-	Phase         int                    `json:"phase"`
-	BootedWorkers int                    `json:"booted_workers"`
-	OldWorkers    int                    `json:"old_workers"`
-	WorkerStatus  []WorkerStatus         `json:"worker_status"`
+	Workers       int            `json:"workers"`
+	Phase         int            `json:"phase"`
+	BootedWorkers int            `json:"booted_workers"`
+	OldWorkers    int            `json:"old_workers"`
+	WorkerStatus  []WorkerStatus `json:"worker_status"`
 	// Single mode fields
-	Backlog      *int                   `json:"backlog,omitempty"`
-	Running      *int                   `json:"running,omitempty"`
-	PoolCapacity *int                   `json:"pool_capacity,omitempty"`
-	MaxThreads   *int                   `json:"max_threads,omitempty"`
+	Backlog      *int `json:"backlog,omitempty"`
+	Running      *int `json:"running,omitempty"`
+	PoolCapacity *int `json:"pool_capacity,omitempty"`
+	MaxThreads   *int `json:"max_threads,omitempty"`
 	// Puma 6.x fields
-	RequestsCount *int64                `json:"requests_count,omitempty"`
-	Uptime        *int                  `json:"uptime,omitempty"`
+	RequestsCount *int64 `json:"requests_count,omitempty"`
+	Uptime        *int   `json:"uptime,omitempty"`
 }
 
 // WorkerStatus represents individual worker status
 type WorkerStatus struct {
-	PID          int        `json:"pid"`
-	Index        int        `json:"index"`
-	Phase        int        `json:"phase"`
-	Booted       bool       `json:"booted"`
-	LastCheckin  string     `json:"last_checkin"`
-	LastStatus   LastStatus `json:"last_status"`
+	PID         int        `json:"pid"`
+	Index       int        `json:"index"`
+	Phase       int        `json:"phase"`
+	Booted      bool       `json:"booted"`
+	LastCheckin string     `json:"last_checkin"`
+	LastStatus  LastStatus `json:"last_status"`
 }
 
 // LastStatus represents worker's last status

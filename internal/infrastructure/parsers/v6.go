@@ -84,6 +84,18 @@ func (p *V6Parser) Parse(stats *infrastructure.PumaStats) (*domain.MetricCollect
 		totalMaxThreads += worker.LastStatus.MaxThreads
 	}
 
+	// Calculate thread utilization
+	if totalPoolCapacity > 0 {
+		utilization := (float64(totalRunning) / float64(totalPoolCapacity)) * 100
+		collection.Add(domain.Metric{
+			Name:      "thread_utilization",
+			Value:     utilization,
+			Type:      domain.MetricTypeGauge,
+			Unit:      "percentage",
+			Timestamp: timestamp,
+		})
+	}
+
 	// Aggregate worker metrics
 	if len(stats.WorkerStatus) > 0 {
 		collection.Add(domain.Metric{

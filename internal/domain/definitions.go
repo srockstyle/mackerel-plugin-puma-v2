@@ -67,6 +67,60 @@ var MetricDefinitions = map[string]MetricDefinition{
 		Type:  MetricTypeGauge,
 		Unit:  "seconds",
 	},
+
+	// Memory metrics
+	"memory.alloc": {
+		Name:  "memory.alloc",
+		Label: "Memory Allocated",
+		Type:  MetricTypeGauge,
+		Unit:  "megabytes",
+	},
+	"memory.sys": {
+		Name:  "memory.sys",
+		Label: "Memory System",
+		Type:  MetricTypeGauge,
+		Unit:  "megabytes",
+	},
+	"memory.heap_inuse": {
+		Name:  "memory.heap_inuse",
+		Label: "Heap In Use",
+		Type:  MetricTypeGauge,
+		Unit:  "megabytes",
+	},
+
+	// GC metrics
+	"gc.num_gc": {
+		Name:  "gc.num_gc",
+		Label: "GC Count",
+		Type:  MetricTypeCounter,
+		Unit:  "integer",
+	},
+	"ruby.gc.count": {
+		Name:  "ruby.gc.count",
+		Label: "Ruby GC Count",
+		Type:  MetricTypeCounter,
+		Unit:  "integer",
+	},
+	"ruby.gc.heap_used": {
+		Name:  "ruby.gc.heap_used",
+		Label: "Ruby Heap Used",
+		Type:  MetricTypeGauge,
+		Unit:  "slots",
+	},
+	"ruby.gc.heap_length": {
+		Name:  "ruby.gc.heap_length",
+		Label: "Ruby Heap Length",
+		Type:  MetricTypeGauge,
+		Unit:  "slots",
+	},
+
+	// Thread utilization metrics
+	"thread_utilization": {
+		Name:  "thread_utilization",
+		Label: "Thread Utilization",
+		Type:  MetricTypeGauge,
+		Unit:  "percentage",
+	},
 }
 
 // MetricDefinition defines a metric's properties

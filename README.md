@@ -44,110 +44,91 @@ Download the latest release from the [releases page](https://github.com/srocksty
 
 ```
 Usage of mackerel-plugin-puma-v2:
-  -host string
-        The bind host for the control server (default "127.0.0.1")
-  -port string
-        The bind port for the control server (default "9293")
-  -sock string
-        Unix domain socket path (overrides host/port)
-  -scheme string
-        URL scheme (http or https) (default "http")
-  -token string
-        Authentication token for the control server
-  -single
-        Monitor Puma in single mode (non-clustered)
-  -with-gc
-        Include GC statistics (may not be available in Puma 6.x)
+  -socket string
+        Path to Puma control socket (default: /tmp/puma.sock)
   -metric-key-prefix string
         Metric key prefix (default "puma")
   -tempfile string
-        Temp file path for storing state
-  -timeout duration
-        Request timeout (default 10s)
-  -retry int
-        Number of retry attempts (default 3)
+        Temp file name for storing state
+  -extended
+        Collect extended metrics (memory, GC, thread utilization, etc)
 ```
 
 ## Configuration
 
-### Basic HTTP Connection
+### Basic Unix Socket Connection (Recommended)
 
 ```toml
 [plugin.metrics.puma]
-command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2"
+command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -socket=/tmp/puma.sock"
 ```
 
-### With Authentication Token
+### Custom Socket Path
 
 ```toml
 [plugin.metrics.puma]
-command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -token=your-secret-token"
+command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -socket=/var/run/puma/pumactl.sock"
 ```
 
-### Unix Domain Socket
+### With Extended Metrics
 
 ```toml
 [plugin.metrics.puma]
-command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -sock=/path/to/pumactl.sock -token=your-secret-token"
+command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -socket=/tmp/puma.sock -extended"
 ```
 
-### Single Mode (Non-clustered Puma)
+### Custom Metric Prefix
 
 ```toml
 [plugin.metrics.puma]
-command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -single -token=your-secret-token"
+command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -socket=/tmp/puma.sock -metric-key-prefix=myapp_puma"
 ```
 
-### HTTPS Connection
+### Environment Variables
 
-```toml
-[plugin.metrics.puma]
-command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -scheme=https -host=puma.example.com -port=9293"
-```
+You can also use environment variables:
 
-### Advanced Configuration
-
-```toml
-[plugin.metrics.puma]
-command = "/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2 -token=secret -timeout=30s -retry=5 -metric-key-prefix=myapp_puma"
+```bash
+export PUMA_SOCKET=/var/run/puma/pumactl.sock
+/opt/mackerel-agent/plugins/bin/mackerel-plugin-puma-v2
 ```
 
 ## Metrics
 
-### Worker Metrics (Cluster Mode)
+### Core Metrics
 
+#### Worker Metrics
 - `puma.workers` - Number of worker processes
 - `puma.booted_workers` - Number of booted workers
 - `puma.old_workers` - Number of old workers (during phased restart)
 - `puma.phase` - Current phase number (during phased restart)
 
-### Thread Metrics
-
-#### Cluster Mode
-- `puma.worker_backlog.worker{N}.backlog` - Request backlog per worker
-- `puma.worker_running.worker{N}.running` - Running threads per worker
-- `puma.worker_pool_capacity.worker{N}.pool_capacity` - Thread pool capacity per worker
-- `puma.worker_thread_utilization.worker{N}.utilization` - Thread utilization percentage per worker (Puma 6.x)
-
-#### Single Mode
+#### Thread Metrics
 - `puma.backlog` - Request backlog
 - `puma.running` - Running threads
 - `puma.pool_capacity` - Thread pool capacity
 - `puma.max_threads` - Maximum threads configured
+- `puma.thread_utilization` - Thread utilization percentage (Puma 6.x)
 
-### Extended Metrics (Puma 6.x)
-
-- `puma.requests_count` - Total number of requests processed
+#### Request Metrics (Puma 6.x)
+- `puma.requests_count` - Total number of requests processed (counter)
 - `puma.uptime` - Server uptime in seconds
 
-### GC Metrics (Optional, may not be available in Puma 6.x)
+### Extended Metrics (with -extended flag)
 
-When using `-with-gc` flag:
-- `puma.gc.count.total` - Total GC count
-- `puma.gc.count.minor` - Minor GC count
-- `puma.gc.count.major` - Major GC count
-- `puma.gc.heap_slot.*` - Heap slot statistics
-- `puma.gc.old_objects.*` - Old object statistics
+#### Memory Metrics
+- `puma.memory.alloc` - Allocated memory (MB)
+- `puma.memory.sys` - System memory (MB)
+- `puma.memory.heap_inuse` - Heap memory in use (MB)
+
+#### GC Metrics
+- `puma.gc.num_gc` - Number of GC runs (counter)
+- `puma.ruby.gc.count` - Ruby GC count (if available)
+- `puma.ruby.gc.heap_used` - Ruby heap slots used
+- `puma.ruby.gc.heap_length` - Ruby heap slots total
+
+#### Go Runtime Metrics
+- `puma.go.goroutines` - Number of goroutines
 
 ## Puma Configuration
 
@@ -156,14 +137,14 @@ To enable the control server in your Puma configuration:
 ### config/puma.rb
 
 ```ruby
-# Enable control server
-activate_control_app 'tcp://127.0.0.1:9293', { auth_token: 'your-secret-token' }
+# Recommended: Unix socket (more secure and efficient)
+activate_control_app 'unix:///tmp/puma.sock'
 
-# Or with Unix socket
-activate_control_app 'unix:///path/to/pumactl.sock', { auth_token: 'your-secret-token' }
+# Alternative: With custom path
+activate_control_app 'unix:///var/run/puma/pumactl.sock'
 
-# For development without auth
-activate_control_app 'tcp://127.0.0.1:9293', { no_token: true }
+# Note: Authentication token is not currently supported in v2
+# This feature is planned for a future release
 ```
 
 ## Version Compatibility

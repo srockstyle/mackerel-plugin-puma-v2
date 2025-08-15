@@ -66,6 +66,38 @@ func (p *MackerelPlugin) GraphDefinition() map[string]mp.Graphs {
 				{Name: "uptime", Label: "Uptime"},
 			},
 		},
+		"memory": {
+			Label: "Memory Usage",
+			Unit:  mp.UnitFloat,
+			Metrics: []mp.Metrics{
+				{Name: "memory.alloc", Label: "Allocated"},
+				{Name: "memory.sys", Label: "System"},
+				{Name: "memory.heap_inuse", Label: "Heap In Use"},
+			},
+		},
+		"gc": {
+			Label: "Garbage Collection",
+			Unit:  mp.UnitInteger,
+			Metrics: []mp.Metrics{
+				{Name: "gc.num_gc", Label: "GC Count", Diff: true},
+				{Name: "ruby.gc.count", Label: "Ruby GC Count", Diff: true},
+			},
+		},
+		"ruby_heap": {
+			Label: "Ruby Heap",
+			Unit:  mp.UnitInteger,
+			Metrics: []mp.Metrics{
+				{Name: "ruby.gc.heap_used", Label: "Heap Used"},
+				{Name: "ruby.gc.heap_length", Label: "Heap Length"},
+			},
+		},
+		"thread_utilization": {
+			Label: "Thread Utilization",
+			Unit:  mp.UnitPercentage,
+			Metrics: []mp.Metrics{
+				{Name: "thread_utilization", Label: "Utilization %"},
+			},
+		},
 	}
 }
 

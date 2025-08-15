@@ -3,20 +3,22 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"time"
 
 	mp "github.com/mackerelio/go-mackerel-plugin"
 	"github.com/srockstyle/mackerel-plugin-puma-v2/internal/application"
+	"github.com/srockstyle/mackerel-plugin-puma-v2/internal/domain"
 	"github.com/srockstyle/mackerel-plugin-puma-v2/internal/presentation"
 )
 
 // PumaPlugin represents the Puma plugin
 type PumaPlugin struct {
-	Socket   string
-	Prefix   string
-	collector *application.MetricsCollector
+	Socket    string
+	Prefix    string
+	collector interface{} // Can be MetricsCollector or ExtendedMetricsCollector
 	formatter *presentation.MackerelPlugin
 }
 
@@ -35,7 +37,18 @@ func (p *PumaPlugin) FetchMetrics() (map[string]float64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	collection, err := p.collector.Collect(ctx)
+	// Check if we're using extended collector
+	var collection *domain.MetricCollection
+	var err error
+	
+	if extCollector, ok := p.collector.(*application.ExtendedMetricsCollector); ok {
+		collection, err = extCollector.CollectWithSystemMetrics(ctx)
+	} else if baseCollector, ok := p.collector.(*application.MetricsCollector); ok {
+		collection, err = baseCollector.Collect(ctx)
+	} else {
+		return nil, fmt.Errorf("unknown collector type")
+	}
+	
 	if err != nil {
 		return nil, err
 	}
@@ -51,6 +64,7 @@ func main() {
 	// optPort := flag.String("port", "9293", "Port (not used with socket)")
 	optPrefix := flag.String("metric-key-prefix", "puma", "Metric key prefix")
 	optTempfile := flag.String("tempfile", "", "Temp file name")
+	optExtended := flag.Bool("extended", false, "Collect extended metrics (memory, GC, etc)")
 	flag.Parse()
 
 	// Setup logger
@@ -81,8 +95,16 @@ func main() {
 	}
 
 	// Create plugin
-	collector := application.NewMetricsCollector(config, logger)
+	baseCollector := application.NewMetricsCollector(config, logger)
 	formatter := presentation.NewMackerelPlugin(config.MetricPrefix)
+
+	var collector interface{}
+	if *optExtended {
+		logger.Println("Using extended metrics collector")
+		collector = application.NewExtendedMetricsCollector(baseCollector)
+	} else {
+		collector = baseCollector
+	}
 
 	plugin := &PumaPlugin{
 		Socket:    config.SocketPath,
