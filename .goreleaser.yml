@@ -24,12 +24,14 @@ archives:
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
-      {{- if eq .Arch "amd64" }}x86_64
+      {{- if eq .Arch "amd64" }}amd64
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
-    format_overrides:
-      - goos: windows
-        format: zip
+    # Use zip format for all platforms (required by mkr)
+    format: zip
+    # Only include the binary, not the directory structure
+    files:
+      - none*
 
 checksum:
   name_template: 'checksums.txt'
@@ -61,8 +63,8 @@ release:
     owner: srockstyle
     name: mackerel-plugin-puma-v2
   
-  # Skip the release creation as it already exists
-  skip_upload: true
+  # Don't skip upload for future releases
+  # skip_upload: true
   
   # If set to false, an existing release will be updated.
   # This is useful if you want to update the release notes or upload new assets
