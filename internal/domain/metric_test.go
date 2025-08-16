@@ -105,7 +105,7 @@ func TestMetricCollection(t *testing.T) {
 				Type:      domain.MetricTypeGauge,
 				Timestamp: time.Now(),
 			}
-			collection.Add(metric)
+			_ = collection.Add(metric)
 		}
 
 		// Filter metrics with value > 2
@@ -128,7 +128,7 @@ func TestMetricCollection(t *testing.T) {
 				Type:      domain.MetricTypeGauge,
 				Timestamp: time.Now(),
 			}
-			collection.Add(metric)
+			_ = collection.Add(metric)
 		}
 
 		count := 0
@@ -151,7 +151,7 @@ func TestMetricCollection(t *testing.T) {
 		collection := domain.NewMetricCollection()
 
 		// Add a metric
-		collection.Add(domain.Metric{
+		_ = collection.Add(domain.Metric{
 			Name:  "test",
 			Value: 42.0,
 			Type:  domain.MetricTypeGauge,

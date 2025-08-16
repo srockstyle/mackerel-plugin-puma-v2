@@ -21,7 +21,7 @@ func (p *V5Parser) Parse(stats *infrastructure.PumaStats) (*domain.MetricCollect
 	timestamp := time.Now()
 
 	// Worker metrics
-	collection.Add(domain.Metric{
+	_ = collection.Add(domain.Metric{
 		Name:      "workers",
 		Value:     float64(stats.Workers),
 		Type:      domain.MetricTypeGauge,
@@ -29,7 +29,7 @@ func (p *V5Parser) Parse(stats *infrastructure.PumaStats) (*domain.MetricCollect
 		Timestamp: timestamp,
 	})
 
-	collection.Add(domain.Metric{
+	_ = collection.Add(domain.Metric{
 		Name:      "booted_workers",
 		Value:     float64(stats.BootedWorkers),
 		Type:      domain.MetricTypeGauge,
@@ -37,7 +37,7 @@ func (p *V5Parser) Parse(stats *infrastructure.PumaStats) (*domain.MetricCollect
 		Timestamp: timestamp,
 	})
 
-	collection.Add(domain.Metric{
+	_ = collection.Add(domain.Metric{
 		Name:      "old_workers",
 		Value:     float64(stats.OldWorkers),
 		Type:      domain.MetricTypeGauge,
@@ -45,7 +45,7 @@ func (p *V5Parser) Parse(stats *infrastructure.PumaStats) (*domain.MetricCollect
 		Timestamp: timestamp,
 	})
 
-	collection.Add(domain.Metric{
+	_ = collection.Add(domain.Metric{
 		Name:      "phase",
 		Value:     float64(stats.Phase),
 		Type:      domain.MetricTypeGauge,
@@ -64,7 +64,7 @@ func (p *V5Parser) Parse(stats *infrastructure.PumaStats) (*domain.MetricCollect
 
 	// Aggregate worker metrics
 	if len(stats.WorkerStatus) > 0 {
-		collection.Add(domain.Metric{
+		_ = collection.Add(domain.Metric{
 			Name:      "backlog",
 			Value:     float64(totalBacklog),
 			Type:      domain.MetricTypeGauge,
@@ -72,7 +72,7 @@ func (p *V5Parser) Parse(stats *infrastructure.PumaStats) (*domain.MetricCollect
 			Timestamp: timestamp,
 		})
 
-		collection.Add(domain.Metric{
+		_ = collection.Add(domain.Metric{
 			Name:      "running",
 			Value:     float64(totalRunning),
 			Type:      domain.MetricTypeGauge,
@@ -80,7 +80,7 @@ func (p *V5Parser) Parse(stats *infrastructure.PumaStats) (*domain.MetricCollect
 			Timestamp: timestamp,
 		})
 
-		collection.Add(domain.Metric{
+		_ = collection.Add(domain.Metric{
 			Name:      "pool_capacity",
 			Value:     float64(totalPoolCapacity),
 			Type:      domain.MetricTypeGauge,
@@ -88,7 +88,7 @@ func (p *V5Parser) Parse(stats *infrastructure.PumaStats) (*domain.MetricCollect
 			Timestamp: timestamp,
 		})
 
-		collection.Add(domain.Metric{
+		_ = collection.Add(domain.Metric{
 			Name:      "max_threads",
 			Value:     float64(totalMaxThreads),
 			Type:      domain.MetricTypeGauge,
@@ -99,7 +99,7 @@ func (p *V5Parser) Parse(stats *infrastructure.PumaStats) (*domain.MetricCollect
 
 	// Single mode metrics
 	if stats.Backlog != nil {
-		collection.Add(domain.Metric{
+		_ = collection.Add(domain.Metric{
 			Name:      "backlog",
 			Value:     float64(*stats.Backlog),
 			Type:      domain.MetricTypeGauge,
@@ -109,7 +109,7 @@ func (p *V5Parser) Parse(stats *infrastructure.PumaStats) (*domain.MetricCollect
 	}
 
 	if stats.Running != nil {
-		collection.Add(domain.Metric{
+		_ = collection.Add(domain.Metric{
 			Name:      "running",
 			Value:     float64(*stats.Running),
 			Type:      domain.MetricTypeGauge,
@@ -119,7 +119,7 @@ func (p *V5Parser) Parse(stats *infrastructure.PumaStats) (*domain.MetricCollect
 	}
 
 	if stats.PoolCapacity != nil {
-		collection.Add(domain.Metric{
+		_ = collection.Add(domain.Metric{
 			Name:      "pool_capacity",
 			Value:     float64(*stats.PoolCapacity),
 			Type:      domain.MetricTypeGauge,
@@ -129,7 +129,7 @@ func (p *V5Parser) Parse(stats *infrastructure.PumaStats) (*domain.MetricCollect
 	}
 
 	if stats.MaxThreads != nil {
-		collection.Add(domain.Metric{
+		_ = collection.Add(domain.Metric{
 			Name:      "max_threads",
 			Value:     float64(*stats.MaxThreads),
 			Type:      domain.MetricTypeGauge,
