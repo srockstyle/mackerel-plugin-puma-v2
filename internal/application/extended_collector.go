@@ -49,7 +49,7 @@ func (c *ExtendedMetricsCollector) addMemoryMetrics(collection *domain.MetricCol
 	timestamp := time.Now()
 
 	// Total allocated memory
-	collection.Add(domain.Metric{
+	_ = collection.Add(domain.Metric{
 		Name:      "memory.alloc",
 		Value:     float64(m.Alloc) / 1024 / 1024, // Convert to MB
 		Type:      domain.MetricTypeGauge,
@@ -58,7 +58,7 @@ func (c *ExtendedMetricsCollector) addMemoryMetrics(collection *domain.MetricCol
 	})
 
 	// Total system memory
-	collection.Add(domain.Metric{
+	_ = collection.Add(domain.Metric{
 		Name:      "memory.sys",
 		Value:     float64(m.Sys) / 1024 / 1024, // Convert to MB
 		Type:      domain.MetricTypeGauge,
@@ -67,7 +67,7 @@ func (c *ExtendedMetricsCollector) addMemoryMetrics(collection *domain.MetricCol
 	})
 
 	// Heap memory in use
-	collection.Add(domain.Metric{
+	_ = collection.Add(domain.Metric{
 		Name:      "memory.heap_inuse",
 		Value:     float64(m.HeapInuse) / 1024 / 1024, // Convert to MB
 		Type:      domain.MetricTypeGauge,
@@ -76,7 +76,7 @@ func (c *ExtendedMetricsCollector) addMemoryMetrics(collection *domain.MetricCol
 	})
 
 	// Number of GC cycles
-	collection.Add(domain.Metric{
+	_ = collection.Add(domain.Metric{
 		Name:      "gc.num_gc",
 		Value:     float64(m.NumGC),
 		Type:      domain.MetricTypeCounter,
@@ -89,7 +89,7 @@ func (c *ExtendedMetricsCollector) addMemoryMetrics(collection *domain.MetricCol
 func (c *ExtendedMetricsCollector) addGoroutineMetrics(collection *domain.MetricCollection) {
 	timestamp := time.Now()
 
-	collection.Add(domain.Metric{
+	_ = collection.Add(domain.Metric{
 		Name:      "go.goroutines",
 		Value:     float64(runtime.NumGoroutine()),
 		Type:      domain.MetricTypeGauge,
@@ -104,7 +104,7 @@ func (c *ExtendedMetricsCollector) addUptimeMetrics(collection *domain.MetricCol
 	// when the plugin started and calculate uptime
 	timestamp := time.Now()
 
-	collection.Add(domain.Metric{
+	_ = collection.Add(domain.Metric{
 		Name:      "plugin.uptime",
 		Value:     0, // Would be calculated from start time
 		Type:      domain.MetricTypeGauge,
@@ -141,22 +141,7 @@ func (c *ExtendedMetricsCollector) tryAddGCMetrics(ctx context.Context, collecti
 	timestamp := time.Now()
 	for _, metric := range gcMetrics.All() {
 		metric.Timestamp = timestamp
-		collection.Add(metric)
+		_ = collection.Add(metric)
 	}
 }
 
-// getFloat64FromInterface safely extracts float64 from interface{}
-func getFloat64FromInterface(val interface{}) (float64, bool) {
-	switch v := val.(type) {
-	case float64:
-		return v, true
-	case int:
-		return float64(v), true
-	case int64:
-		return float64(v), true
-	case uint64:
-		return float64(v), true
-	default:
-		return 0, false
-	}
-}

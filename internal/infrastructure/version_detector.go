@@ -32,7 +32,7 @@ func (d *VersionDetector) DetectVersion(ctx context.Context) (string, error) {
 		return "6.x", nil
 	}
 
-	if stats.WorkerStatus != nil && len(stats.WorkerStatus) > 0 {
+	if len(stats.WorkerStatus) > 0 {
 		// Check worker status for more detailed version info
 		for _, worker := range stats.WorkerStatus {
 			// Puma 5.x has more detailed worker status

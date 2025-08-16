@@ -78,7 +78,7 @@ func (p *GCParser) ParseGCStats(data []byte) (*domain.MetricCollection, error) {
 
 	// Basic GC count (always available)
 	if count, err := stats.Count.Float64(); err == nil {
-		collection.Add(domain.Metric{
+		_ = collection.Add(domain.Metric{
 			Name:  "ruby.gc.count",
 			Value: count,
 			Type:  domain.MetricTypeCounter,
@@ -87,14 +87,14 @@ func (p *GCParser) ParseGCStats(data []byte) (*domain.MetricCollection, error) {
 
 	// Minor/Major GC counts (Ruby 2.1+)
 	if minor, err := stats.MinorGcCount.Float64(); err == nil {
-		collection.Add(domain.Metric{
+		_ = collection.Add(domain.Metric{
 			Name:  "ruby.gc.minor_count",
 			Value: minor,
 			Type:  domain.MetricTypeCounter,
 		})
 	}
 	if major, err := stats.MajorGcCount.Float64(); err == nil {
-		collection.Add(domain.Metric{
+		_ = collection.Add(domain.Metric{
 			Name:  "ruby.gc.major_count",
 			Value: major,
 			Type:  domain.MetricTypeCounter,
@@ -104,7 +104,7 @@ func (p *GCParser) ParseGCStats(data []byte) (*domain.MetricCollection, error) {
 	// Heap slots - try different field names for compatibility
 	// Ruby 2.2+ uses heap_available_slots
 	if slots, err := stats.HeapAvailableSlots.Float64(); err == nil {
-		collection.Add(domain.Metric{
+		_ = collection.Add(domain.Metric{
 			Name:  "ruby.gc.heap_available_slots",
 			Value: slots,
 			Type:  domain.MetricTypeGauge,
@@ -114,7 +114,7 @@ func (p *GCParser) ParseGCStats(data []byte) (*domain.MetricCollection, error) {
 	// Live slots - try all possible field names
 	for _, field := range []json.Number{stats.HeapLiveSlots, stats.HeapLiveSlot, stats.HeapLiveNum} {
 		if val, err := field.Float64(); err == nil {
-			collection.Add(domain.Metric{
+			_ = collection.Add(domain.Metric{
 				Name:  "ruby.gc.heap_live_slots",
 				Value: val,
 				Type:  domain.MetricTypeGauge,
@@ -126,7 +126,7 @@ func (p *GCParser) ParseGCStats(data []byte) (*domain.MetricCollection, error) {
 	// Free slots
 	for _, field := range []json.Number{stats.HeapFreeSlots, stats.HeapFreeSlot, stats.HeapFreeNum} {
 		if val, err := field.Float64(); err == nil {
-			collection.Add(domain.Metric{
+			_ = collection.Add(domain.Metric{
 				Name:  "ruby.gc.heap_free_slots",
 				Value: val,
 				Type:  domain.MetricTypeGauge,
@@ -138,7 +138,7 @@ func (p *GCParser) ParseGCStats(data []byte) (*domain.MetricCollection, error) {
 	// Final slots
 	for _, field := range []json.Number{stats.HeapFinalSlots, stats.HeapFinalSlot, stats.HeapFinalNum} {
 		if val, err := field.Float64(); err == nil {
-			collection.Add(domain.Metric{
+			_ = collection.Add(domain.Metric{
 				Name:  "ruby.gc.heap_final_slots",
 				Value: val,
 				Type:  domain.MetricTypeGauge,
@@ -149,7 +149,7 @@ func (p *GCParser) ParseGCStats(data []byte) (*domain.MetricCollection, error) {
 
 	// Marked slots (Ruby 2.2+)
 	if marked, err := stats.HeapMarkedSlots.Float64(); err == nil {
-		collection.Add(domain.Metric{
+		_ = collection.Add(domain.Metric{
 			Name:  "ruby.gc.heap_marked_slots",
 			Value: marked,
 			Type:  domain.MetricTypeGauge,
@@ -159,7 +159,7 @@ func (p *GCParser) ParseGCStats(data []byte) (*domain.MetricCollection, error) {
 	// Old objects
 	for _, field := range []json.Number{stats.OldObjects, stats.OldObject} {
 		if val, err := field.Float64(); err == nil {
-			collection.Add(domain.Metric{
+			_ = collection.Add(domain.Metric{
 				Name:  "ruby.gc.old_objects",
 				Value: val,
 				Type:  domain.MetricTypeGauge,
@@ -171,7 +171,7 @@ func (p *GCParser) ParseGCStats(data []byte) (*domain.MetricCollection, error) {
 	// Old objects limit
 	for _, field := range []json.Number{stats.OldObjectsLimit, stats.OldObjectLimit} {
 		if val, err := field.Float64(); err == nil {
-			collection.Add(domain.Metric{
+			_ = collection.Add(domain.Metric{
 				Name:  "ruby.gc.old_objects_limit",
 				Value: val,
 				Type:  domain.MetricTypeGauge,
@@ -183,7 +183,7 @@ func (p *GCParser) ParseGCStats(data []byte) (*domain.MetricCollection, error) {
 	// Old malloc bytes
 	for _, field := range []json.Number{stats.OldmallocIncreaseBytes, stats.OldmallocIncrease} {
 		if val, err := field.Float64(); err == nil {
-			collection.Add(domain.Metric{
+			_ = collection.Add(domain.Metric{
 				Name:  "ruby.gc.oldmalloc_bytes",
 				Value: val,
 				Type:  domain.MetricTypeGauge,
@@ -195,7 +195,7 @@ func (p *GCParser) ParseGCStats(data []byte) (*domain.MetricCollection, error) {
 	// Old malloc limit
 	for _, field := range []json.Number{stats.OldmallocIncreaseBytesLimit, stats.OldmallocLimit} {
 		if val, err := field.Float64(); err == nil {
-			collection.Add(domain.Metric{
+			_ = collection.Add(domain.Metric{
 				Name:  "ruby.gc.oldmalloc_limit",
 				Value: val,
 				Type:  domain.MetricTypeGauge,
@@ -206,14 +206,14 @@ func (p *GCParser) ParseGCStats(data []byte) (*domain.MetricCollection, error) {
 
 	// For backward compatibility with simple parsers
 	if used, err := stats.HeapUsed.Float64(); err == nil {
-		collection.Add(domain.Metric{
+		_ = collection.Add(domain.Metric{
 			Name:  "ruby.gc.heap_used",
 			Value: used,
 			Type:  domain.MetricTypeGauge,
 		})
 	}
 	if length, err := stats.HeapLength.Float64(); err == nil {
-		collection.Add(domain.Metric{
+		_ = collection.Add(domain.Metric{
 			Name:  "ruby.gc.heap_length",
 			Value: length,
 			Type:  domain.MetricTypeGauge,
